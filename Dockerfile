@@ -1,13 +1,15 @@
-FROM python:3-alpine
+FROM python:3.9.18-slim-bullseye
 
-RUN apk add --update git bash curl unzip zip openssl make
+# Install dependencies
+#RUN yum update -y && \
+# yum install -y httpd
 
-ENV TERRAFORM_VERSION="0.12.28"
+# copy src folder to dist folder in container 
+ADD  ../src dist
+#upgrade pip 
+RUN pip install --upgrade pip
+# Install python reqirments 
+RUN pip install -r dist/requirments.txt
+#run pyhthon script 
+CMD python dist/downloader.py
 
-RUN curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip > terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-  unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin && \
-  rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-
-RUN pip install awscli boto3
-
-ENTRYPOINT ["terraform"]
